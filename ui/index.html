@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>扶輪公益網 AI 助手 - 控制工作台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 頂部 Header -->
+  <header class="app-header">
+    <div class="header-brand">
+      <span class="header-icon">📦</span>
+      <div class="header-titles">
+        <h1 class="header-title">扶輪公益網 AI 助手</h1>
+        <div class="header-status">
+          <span class="status-dot"></span>
+          <span class="status-text">雲端已連線</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="header-actions">
+      <!-- ⚠️ 關鍵功能：刷新按鈕只在切換到「物資佇列」時出現 -->
+      <button type="button" class="btn-refresh" id="btnHeaderRefresh" onclick="handleRefreshQueue()" title="重新整理物資佇列">
+        <span class="refresh-icon" id="refreshSpinIcon">🔄</span>
+        <span>刷新</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 主內容容器 (四個分頁檢視) -->
+  <main class="main-content">
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 分頁 1：📸 拍照採集 (Capture)                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="tab-panel active" id="panelCapture">
+      <div class="panel-inner">
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-heading">
+              <span>📸 物資相片採集</span>
+              <span class="badge-pill" id="photoCountBadge">0 / 3 張</span>
+            </h2>
+            <span class="section-tip">支援由桌面拖曳照片或剪貼簿貼上</span>
+          </div>
+
+          <!-- 三個相片槽 -->
+          <div class="photo-grid">
+            <!-- 槽位 1 -->
+            <div class="photo-slot" id="slot1" onclick="triggerFileInput(1)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event, 1)" ondrop="handleDrop(event, 1)">
+              <div class="slot-placeholder">
+                <span class="slot-icon">📷</span>
+                <span class="slot-title">相片 1</span>
+                <span class="slot-hint">主要正面</span>
+              </div>
+              <img class="slot-image" id="preview1" alt="相片1預覽">
+              <button type="button" class="slot-btn-delete" onclick="removePhoto(event, 1)" title="刪除此照片">✕</button>
+            </div>
+
+            <!-- 槽位 2 -->
+            <div class="photo-slot" id="slot2" onclick="triggerFileInput(2)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event, 2)" ondrop="handleDrop(event, 2)">
+              <div class="slot-placeholder">
+                <span class="slot-icon">📷</span>
+                <span class="slot-title">相片 2</span>
+                <span class="slot-hint">規格標籤</span>
+              </div>
+              <img class="slot-image" id="preview2" alt="相片2預覽">
+              <button type="button" class="slot-btn-delete" onclick="removePhoto(event, 2)" title="刪除此照片">✕</button>
+            </div>
+
+            <!-- 槽位 3 -->
+            <div class="photo-slot" id="slot3" onclick="triggerFileInput(3)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event, 3)" ondrop="handleDrop(event, 3)">
+              <div class="slot-placeholder">
+                <span class="slot-icon">📷</span>
+                <span class="slot-title">相片 3</span>
+                <span class="slot-hint">局部配件</span>
+              </div>
+              <img class="slot-image" id="preview3" alt="相片3預覽">
+              <button type="button" class="slot-btn-delete" onclick="removePhoto(event, 3)" title="刪除此照片">✕</button>
+            </div>
+          </div>
+
+          <!-- 隱藏原生 File Input -->
+          <input type="file" id="fileInput1" accept="image/*" class="file-hidden" onchange="handleFileChosen(event, 1)">
+          <input type="file" id="fileInput2" accept="image/*" class="file-hidden" onchange="handleFileChosen(event, 2)">
+          <input type="file" id="fileInput3" accept="image/*" class="file-hidden" onchange="handleFileChosen(event, 3)">
+
+          <div class="quick-sample-row">
+            <span class="quick-sample-label">⚡ 快速測試：</span>
+            <button type="button" class="btn-sample" onclick="loadSamplePhotos()">載入示範相片</button>
+            <button type="button" class="btn-sample btn-sample-clear" onclick="clearAllPhotos()">清空相片</button>
+          </div>
+        </div>
+
+        <!-- 採集資訊表單 -->
+        <div class="section-card form-card">
+          <div class="form-group">
+            <label class="form-label" for="inputAddress">
+              <span>📍 物資所在地址</span>
+              <span class="form-label-tag">本機將自動記住</span>
+            </label>
+            <div class="input-with-action">
+              <input type="text" id="inputAddress" class="text-input" placeholder="例如：台南市安平區永華三街..." value="台南市安平區永華三街333號6樓-3">
+              <button type="button" class="input-clear-btn" onclick="clearInput('inputAddress')" title="清空">✕</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inputNotes">
+              <span>📝 現況備註說明</span>
+              <span class="form-label-tag">選填，外觀看不出的細節</span>
+            </label>
+            <textarea id="inputNotes" class="textarea-input" rows="3" placeholder="例如：功能正常附原廠紙箱、九成新、需自備搬運工具..."></textarea>
+          </div>
+
+          <!-- 上傳按鈕 -->
+          <button type="button" class="btn-primary-cta" id="btnSubmitCapture" onclick="handleSubmitCapture()">
+            <span class="btn-cta-icon">🚀</span>
+            <span class="btn-cta-text" id="btnSubmitText">一鍵上傳並啟動 AI 辨識</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 分頁 2：📋 物資佇列 (Active Goods Queue)              -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="tab-panel" id="panelQueue">
+      <div class="panel-inner">
+        <!-- 佇列統計列 -->
+        <div class="queue-meta-bar">
+          <div class="queue-count-info">
+            <span class="count-highlight" id="queueTotalCount">0</span> 筆物資可直接刊登
+          </div>
+          <div class="queue-filter-hint">依上傳時間排序</div>
+        </div>
+
+        <!-- 佇列卡片容器 (由 JavaScript 動態渲染) -->
+        <div class="cards-stream" id="queueCardsContainer">
+          <!-- 卡片內容由 app.js 動態生成 -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 分頁 3：⏳ 待處理 (Pending / Skipped / Processing)    -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="tab-panel" id="panelPending">
+      <div class="panel-inner">
+        
+        <!-- 子區塊 A：AI 辨識中 -->
+        <div class="pending-section">
+          <div class="pending-section-header">
+            <h3 class="pending-title">
+              <span class="pending-icon">⏳</span>
+              <span>AI 辨識中</span>
+              <span class="badge-count" id="processingCountBadge" style="display: none;">0</span>
+            </h3>
+            <span class="pending-desc">Gemini 正在分析照片，辨識完自動移入佇列</span>
+          </div>
+          
+          <div class="cards-stream" id="processingCardsContainer">
+            <!-- 動態注入辨識中卡片 -->
+          </div>
+        </div>
+
+        <!-- 子區塊 B：已略過/暫存 -->
+        <div class="pending-section" style="margin-top: 20px;">
+          <div class="pending-section-header">
+            <h3 class="pending-title">
+              <span class="pending-icon">⏩</span>
+              <span>已略過項目</span>
+              <span class="badge-count" id="skippedCountBadge" style="display: none;">0</span>
+            </h3>
+            <span class="pending-desc">暫不發布之物資，可隨時一鍵復原回佇列</span>
+          </div>
+
+          <div class="cards-stream" id="skippedCardsContainer">
+            <!-- 動態注入已略過卡片 -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════ -->
+    <!-- 分頁 4：⚙️ 偏好設定 (Settings)                        -->
+    <!-- ═══════════════════════════════════════════════════ -->
+    <section class="tab-panel" id="panelSettings">
+      <div class="panel-inner">
+        <div class="section-card settings-card">
+          <h2 class="settings-title">⚙️ 系統與連線偏好設定</h2>
+
+          <div class="form-group">
+            <label class="form-label" for="settingGasUrl">
+              <span>Google Apps Script 部署網址 (Web App URL)</span>
+            </label>
+            <input type="text" id="settingGasUrl" class="text-input" placeholder="https://script.google.com/macros/s/.../exec" value="https://script.google.com/macros/s/AKfycbxmQqWQK44VN-OCoGKM5_0ekS_k-n1iDbXuU_e0L8KYVbppMWCR7iVA_KePH_pltrly/exec">
+            <div class="setting-help">串接試算表雲端流水線後端，發布人員 100% 免填 API Key。</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settingDefaultAddress">
+              <span>預設備援取件地址</span>
+            </label>
+            <input type="text" id="settingDefaultAddress" class="text-input" placeholder="若志工未填寫地址，以此地址為預設" value="台南市安平區永華三街333號6樓-3">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="settingUploaderName">
+              <span>志工姓名 / 暱稱 (可選填)</span>
+            </label>
+            <input type="text" id="settingUploaderName" class="text-input" placeholder="例如：王小明（留白則顯示未具名）" value="">
+          </div>
+
+          <!-- 相片背景智慧提早預載開關 -->
+          <div class="form-group toggle-group">
+            <div class="toggle-header">
+              <label class="form-label" for="settingPreloadPhotos" style="margin-bottom: 0; cursor: pointer;">
+                <span>⚡ 相片背景智慧提早預載 (加速刊登)</span>
+              </label>
+              <label class="switch-toggle" title="切換是否提早預載相片">
+                <input type="checkbox" id="settingPreloadPhotos" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            <div class="setting-help">
+              開啟時，系統將在背景自動預載佇列前 2 筆照片至本機快取，點擊「一鍵帶入」時可瞬間 0 秒完成填表。<br>
+              💡 若使用手機熱點或計量網路，可關閉以節省流量。
+            </div>
+          </div>
+
+          <button type="button" class="btn-save-settings" onclick="handleSaveSettings()">
+            💾 儲存偏好設定
+          </button>
+        </div>
+
+        <!-- 雲端空間維護專區 -->
+        <div class="section-card settings-card" style="margin-top: 16px;">
+          <h2 class="settings-title" style="color: #991B1B;">🧹 雲端硬碟防爆空間清理工具</h2>
+          <p class="maintenance-desc">
+            Google 表單照片上傳上限預設為 1GB。定期清理可將關聯之 Drive 圖檔移入垃圾桶並清除試算表列，防止表單滿載關閉。
+          </p>
+
+          <div class="maintenance-actions">
+            <button type="button" class="btn-maintenance btn-clean-published" onclick="simulateCleanup('published')">
+              <span>🧹 一鍵清理「已刊登」物資與圖檔</span>
+            </button>
+            <button type="button" class="btn-maintenance btn-clean-skipped" onclick="simulateCleanup('skipped')">
+              <span>🗑️ 一鍵清理「已略過」物資與廢照</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="version-info">
+          <span>扶輪公益網 AI 助手 Windows 桌面正式版 v2.0</span>
+          <span>Microsoft Edge WebView2 · Chromium 核心</span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- 底部導航欄 (Bottom Navigation Bar)                  -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <nav class="bottom-nav">
+    <!-- Tab 1 -->
+    <button type="button" class="nav-item active" id="navBtnCapture" onclick="switchTab('capture')">
+      <span class="nav-icon">📸</span>
+      <span class="nav-label">拍照採集</span>
+    </button>
+
+    <!-- Tab 2 -->
+    <button type="button" class="nav-item" id="navBtnQueue" onclick="switchTab('queue')">
+      <span class="nav-badge" id="navBadgeQueue" style="display: none;">0</span>
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">物資佇列</span>
+    </button>
+
+    <!-- Tab 3 -->
+    <button type="button" class="nav-item" id="navBtnPending" onclick="switchTab('pending')">
+      <span class="nav-badge nav-badge-amber" id="navBadgePending" style="display: none;">0</span>
+      <span class="nav-icon">⏳</span>
+      <span class="nav-label">待處理</span>
+    </button>
+
+    <!-- Tab 4 -->
+    <button type="button" class="nav-item" id="navBtnSettings" onclick="switchTab('settings')">
+      <span class="nav-icon">⚙️</span>
+      <span class="nav-label">偏好設定</span>
+    </button>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- 燈箱大圖檢視 (Lightbox Modal)                       -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="lightbox-backdrop" id="lightboxModal" onclick="closeLightbox()">
+    <button type="button" class="lightbox-close-btn" onclick="closeLightbox()">✕</button>
+    <img class="lightbox-img" id="lightboxImg" alt="大圖放大檢視" onclick="event.stopPropagation()">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- 上傳成功對話框 (Success Modal)                      -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="modal-backdrop" id="uploadSuccessModal">
+    <div class="modal-card">
+      <div class="modal-icon-badge">🎉</div>
+      <h3 class="modal-title">物資上傳成功！</h3>
+      <p class="modal-message">
+        相片已上傳至雲端相片庫，Gemini AI 正在背景排程分析品名與分類！您可以在「待處理」分頁查看分析進度。
+      </p>
+      <div class="modal-actions-stacked">
+        <button type="button" class="btn-modal-primary" onclick="handleContinueCapture()">➕ 繼續新增下一件物資</button>
+        <button type="button" class="btn-modal-secondary" onclick="handleGoToQueue()">📋 前往物資佇列檢視</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 輕量吐司通知 (Toast) -->
+  <div class="toast" id="toastMessage"></div>
+
+  <!-- 載入應用腳本 -->
+  <script src="mock_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

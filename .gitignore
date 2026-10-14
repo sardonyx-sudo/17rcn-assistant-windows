@@ -1,0 +1,25 @@
+# 1. 執行檔與編譯產物 (重大：二進位與安裝檔請透過 GitHub Releases 發布)
+*.exe
+dist/
+build/
+*.spec
+
+# 2. 個人隱私、瀏覽器登入憑證與本機快取 (絕對禁止推上 GitHub)
+data/profile/
+data/img_cache/
+data/config.json
+*.log
+
+# 3. Python 暫存快取
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# 4. 編輯器與作業系統暫存
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
