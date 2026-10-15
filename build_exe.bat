@@ -32,13 +32,13 @@ if errorlevel 1 goto BUILD_FAIL
 echo [INFO] Building standalone executable with PyInstaller...
 echo [INFO] This might take 1-2 minutes, please wait...
 
-python -m PyInstaller --noconfirm --onedir --windowed --add-data "ui;ui" --name "RotaryAssistant" "%~dp0main.py"
+python -m PyInstaller --noconfirm --onedir --windowed --add-data "ui;ui" --name "RCNAssistant" "%~dp0main.py"
 if errorlevel 1 goto BUILD_FAIL
 
 echo ========================================================
 echo [SUCCESS] Build completed successfully!
 echo Executable location:
-echo   %~dp0dist\RotaryAssistant\RotaryAssistant.exe
+echo   %~dp0dist\RCNAssistant\RCNAssistant.exe
 echo ========================================================
 echo.
 pause

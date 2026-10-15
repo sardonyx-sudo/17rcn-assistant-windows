@@ -30,11 +30,11 @@ jobs:
 
       - name: 執行 PyInstaller 打包
         run: |
-          pyinstaller --noconfirm --onedir --windowed --add-data "ui;ui" --name "RotaryAssistant" main.py
+          pyinstaller --noconfirm --onedir --windowed --add-data "ui;ui" --name "RCNAssistant" main.py
 
       - name: 上傳 EXE 桌面版 (GitHub 自動打包單層 ZIP)
         uses: actions/upload-artifact@v7
         with:
-          name: RotaryAssistant-Windows-x64
-          path: dist/RotaryAssistant
+          name: RCNAssistant-Windows-x64
+          path: dist/RCNAssistant
           retention-days: 30

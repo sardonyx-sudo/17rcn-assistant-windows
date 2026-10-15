@@ -62,7 +62,7 @@
 2. **打包為獨立 EXE 執行檔（可攜式）**：
    * 雙擊 **`build_exe.bat`**
    * 自動透過 PyInstaller 將程式打包為獨立資料夾版本，產生的執行檔位於：
-     `dist\RotaryAssistant\RotaryAssistant.exe`
+     `dist\RCNAssistant\RCNAssistant.exe`
    * 可將此資料夾複製到任何 Windows 電腦直接執行，免安裝 Python！
 
 ---
