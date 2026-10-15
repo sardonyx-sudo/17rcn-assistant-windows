@@ -32,13 +32,9 @@ jobs:
         run: |
           pyinstaller --noconfirm --onedir --windowed --add-data "ui;ui" --name "RotaryAssistant" main.py
 
-      - name: 壓縮打包產物為 ZIP
-        run: |
-          Compress-Archive -Path dist/RotaryAssistant -DestinationPath RotaryAssistant-Windows-x64.zip
-
-      - name: 上傳 EXE 壓縮包供直接下載
+      - name: 上傳 EXE 桌面版 (GitHub 自動打包單層 ZIP)
         uses: actions/upload-artifact@v7
         with:
-          name: 扶輪公益網助手-Windows桌面版
-          path: RotaryAssistant-Windows-x64.zip
+          name: RotaryAssistant-Windows-x64
+          path: dist/RotaryAssistant
           retention-days: 30
